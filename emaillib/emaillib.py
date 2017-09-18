@@ -26,14 +26,14 @@ class SmtpServer(object):
     """A simple wrapper around build in smtplib capabilities"""
 
     def __init__(self,
-                 address,
+                 smtp_address,
                  username=None,
                  password=None,
                  tls=True,
                  ssl=False,
                  port=None):
         self._smtp = None
-        self._address = address
+        self._address = smtp_address
         self._tls = tls
         self._ssl = ssl
         self._port = port
