@@ -166,12 +166,12 @@ class EasySender(object):
     """A simple wrapper around the SmtpServer object"""
 
     def __init__(self,
-                 address,
+                 smtp_address,
                  username=None,
                  password=None,
                  tls=False,
                  ssl=True):
-        self._server = SmtpServer(address, username, password, tls, ssl)
+        self._server = SmtpServer(smtp_address, username, password, tls, ssl)
 
     def send(self,
              sender,
