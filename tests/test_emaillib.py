@@ -175,7 +175,7 @@ class TestEmaillib(unittest.BetamaxTestCase):
                                                'andmore@gmail.com'])
 
     def testSmtpInstance(self):
-        info = {'address': 'smtp.test.com',
+        info = {'smtp_address': 'smtp.test.com',
                 'username': 'hacker',
                 'password': 'whatever',
                 'ssl': False,

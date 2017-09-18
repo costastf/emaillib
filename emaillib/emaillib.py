@@ -170,8 +170,14 @@ class EasySender(object):
                  username=None,
                  password=None,
                  tls=False,
-                 ssl=True):
-        self._server = SmtpServer(smtp_address, username, password, tls, ssl)
+                 ssl=True,
+                 port=None):
+        self._server = SmtpServer(smtp_address,
+                                  username,
+                                  password,
+                                  tls,
+                                  ssl,
+                                  port)
 
     def send(self,
              sender,
