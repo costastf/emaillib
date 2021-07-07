@@ -7,3 +7,9 @@ History
 ---------------------
 
 * First code creation
+
+
+1.0.0 (07-07-2021)
+------------------
+
+* Dropped support for python2.7, updated the template and setup a pipeline for release.
