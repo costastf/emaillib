@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# File: __init__.py
+# File: reset.py
 #
-# Copyright 2017 Costas Tyfoxylos
+# Copyright 2018 Costas Tyfoxylos
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to
@@ -23,33 +23,29 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-"""
-emaillib package.
+import os
+import sys
+import shutil
+import stat
+import logging
 
-Import all parts from emaillib here
+# this sets up everything and MUST be included before any third party module in every step
+import _initialize_template
 
-.. _Google Python Style Guide:
-   http://google.github.io/styleguide/pyguide.html
-"""
-from ._version import __version__
-from .emaillib import SmtpServer, EasySender, Message
+from configuration import ENVIRONMENT_VARIABLES
+from library import clean_up, get_project_root_path
 
-__author__ = '''Costas Tyfoxylos <costas.tyf@gmail.com>'''
-__docformat__ = '''google'''
-__date__ = '''16-09-2017'''
-__copyright__ = '''Copyright 2017, Costas Tyfoxylos'''
-__license__ = '''MIT'''
-__maintainer__ = '''Costas Tyfoxylos'''
-__email__ = '''<costas.tyf@gmail.com>'''
-__status__ = '''Development'''  # "Prototype", "Development", "Production".
-
-# This is to 'use' the module(s), so lint doesn't complain
-assert __version__
-assert __author__
-assert __email__
+# This is the main prefix used for logging
+LOGGER_BASENAME = '''_CI.reset'''
+LOGGER = logging.getLogger(LOGGER_BASENAME)
+LOGGER.addHandler(logging.NullHandler())
 
 
-# assert objects
-assert SmtpServer
-assert EasySender
-assert Message
+def reset(environment_variables):
+    pipfile_path = environment_variables.get('PIPENV_PIPFILE', 'Pipfile')
+    venv = os.path.join(get_project_root_path(), os.path.dirname(pipfile_path), '.venv')
+    clean_up(venv)
+
+
+if __name__ == '__main__':
+    reset(ENVIRONMENT_VARIABLES)

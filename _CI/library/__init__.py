@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # File: __init__.py
 #
-# Copyright 2017 Costas Tyfoxylos
+# Copyright 2018 Costas Tyfoxylos
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to
@@ -23,33 +23,19 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-"""
-emaillib package.
-
-Import all parts from emaillib here
-
-.. _Google Python Style Guide:
-   http://google.github.io/styleguide/pyguide.html
-"""
-from ._version import __version__
-from .emaillib import SmtpServer, EasySender, Message
-
-__author__ = '''Costas Tyfoxylos <costas.tyf@gmail.com>'''
-__docformat__ = '''google'''
-__date__ = '''16-09-2017'''
-__copyright__ = '''Copyright 2017, Costas Tyfoxylos'''
-__license__ = '''MIT'''
-__maintainer__ = '''Costas Tyfoxylos'''
-__email__ = '''<costas.tyf@gmail.com>'''
-__status__ = '''Development'''  # "Prototype", "Development", "Production".
-
-# This is to 'use' the module(s), so lint doesn't complain
-assert __version__
-assert __author__
-assert __email__
-
-
-# assert objects
-assert SmtpServer
-assert EasySender
-assert Message
+from .core_library import (activate_template,
+                           execute_command,
+                           setup_logging,
+                           get_project_root_path,
+                           validate_binary_prerequisites,
+                           validate_environment_variable_prerequisites,
+                           is_venv_created,
+                           load_environment_variables,
+                           load_dot_env_file,
+                           clean_up,
+                           save_requirements,
+                           open_file,
+                           bump,
+                           activate_virtual_environment,
+                           tempdir,
+                           update_pipfile)

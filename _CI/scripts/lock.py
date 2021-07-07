@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# File: __init__.py
+# File: rebuild_pipfile.py
 #
-# Copyright 2017 Costas Tyfoxylos
+# Copyright 2019 Ilija Matoski
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 #  of this software and associated documentation files (the "Software"), to
@@ -23,33 +23,35 @@
 #  DEALINGS IN THE SOFTWARE.
 #
 
-"""
-emaillib package.
+import logging
+import argparse
 
-Import all parts from emaillib here
+# this sets up everything and MUST be included before any third party module in every step
+import _initialize_template
 
-.. _Google Python Style Guide:
-   http://google.github.io/styleguide/pyguide.html
-"""
-from ._version import __version__
-from .emaillib import SmtpServer, EasySender, Message
+from bootstrap import bootstrap
+from library import update_pipfile
 
-__author__ = '''Costas Tyfoxylos <costas.tyf@gmail.com>'''
-__docformat__ = '''google'''
-__date__ = '''16-09-2017'''
-__copyright__ = '''Copyright 2017, Costas Tyfoxylos'''
-__license__ = '''MIT'''
-__maintainer__ = '''Costas Tyfoxylos'''
-__email__ = '''<costas.tyf@gmail.com>'''
-__status__ = '''Development'''  # "Prototype", "Development", "Production".
+# This is the main prefix used for logging
+LOGGER_BASENAME = '''_CI.build'''
+LOGGER = logging.getLogger(LOGGER_BASENAME)
+LOGGER.addHandler(logging.NullHandler())
 
-# This is to 'use' the module(s), so lint doesn't complain
-assert __version__
-assert __author__
-assert __email__
+def get_arguments():
+    parser = argparse.ArgumentParser(description='Regenerates Pipfile based on Pipfile.lock')
+    parser.add_argument('--stdout',
+                        help='Output the Pipfile to stdout',
+                        action="store_true",
+                        default=False)
+    args = parser.parse_args()
+    return args
 
 
-# assert objects
-assert SmtpServer
-assert EasySender
-assert Message
+def execute():
+    bootstrap()
+    args = get_arguments()
+    return update_pipfile(args.stdout)
+
+
+if __name__ == '__main__':
+    raise SystemExit(not execute())

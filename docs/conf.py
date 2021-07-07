@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # emaillib documentation build configuration file, created by
-# sphinx-quickstart on Tue Jul  9 22:26:36 2013.
+# sphinx-quickstart
 #
 # This file is execfile()d with the current directory set to its
 # containing dir.
@@ -28,21 +28,10 @@ cwd = os.getcwd()
 project_root = os.path.dirname(cwd)
 
 # Run apidoc to traverse the project directory and add all modules to the docs
-import sphinx.apidoc
-sphinx.apidoc.main(argv=['_','-f', '-o', os.path.join(project_root, 'docs'),
-                   os.path.join(project_root, '''emaillib''')])
+import sphinx.ext.apidoc
 
-# parse the index.rst and fix the title underlining
-with open(os.path.join(os.path.abspath(os.path.dirname(__file__)),
-                       'index.rst'), 'r+') as index_rst_file:
-    index_rst = index_rst_file.read()
-    index_rst_file.seek(0, 0)
-    for line in index_rst.splitlines():
-        if line.startswith('Welcome to '):
-            line_length = len(line.strip())
-        if line.startswith('======================================'):
-            line = '=' * line_length
-        index_rst_file.write(line + '\n')
+sphinx.ext.apidoc.main(argv=['-f', '-o', os.path.join(project_root, 'docs'),
+                             os.path.join(project_root, '''emaillib''')])
 
 # Insert the project root dir as the first element in the PYTHONPATH.
 # This lets us ensure that the source package is imported, and that its
@@ -61,7 +50,8 @@ import emaillib
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
-    'sphinx.ext.napoleon'
+    'sphinx.ext.napoleon',
+    'sphinx.ext.todo'
 ]
 
 napoleon_google_docstring = True
