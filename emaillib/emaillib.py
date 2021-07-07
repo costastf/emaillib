@@ -35,9 +35,9 @@ import logging
 import os
 import re
 import smtplib
-from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from email.utils import COMMASPACE, formatdate, parseaddr
 
 __author__ = '''Costas Tyfoxylos <costas.tyf@gmail.com>'''
@@ -57,10 +57,10 @@ LOGGER = logging.getLogger(LOGGER_BASENAME)
 LOGGER.addHandler(logging.NullHandler())
 
 
-class SmtpServer(object):
-    """A simple wrapper around build in smtplib capabilities"""
+class SmtpServer:  # pylint: disable=too-many-instance-attributes
+    """A simple wrapper around build in smtplib capabilities."""
 
-    def __init__(self,
+    def __init__(self,  # pylint: disable=too-many-arguments
                  smtp_address,
                  username=None,
                  password=None,
@@ -79,41 +79,41 @@ class SmtpServer(object):
 
     @property
     def tls(self):
-        """The setting of tls upon instantiation"""
+        """The setting of tls upon instantiation."""
         return self._tls
 
     @property
     def ssl(self):
-        """The setting of ssl upon instantiation"""
+        """The setting of ssl upon instantiation."""
         return self._ssl
 
     @property
     def username(self):
-        """The username upon instantiation"""
+        """The username upon instantiation."""
         return self._username
 
     @property
     def password(self):
-        """The password upon instantiation"""
+        """The password upon instantiation."""
         return self._password
 
     @property
     def address(self):
-        """The smtp server address upon instantiation"""
+        """The smtp server address upon instantiation."""
         return self._address
 
     @property
     def port(self):
-        """The smtp server port upon instantiation"""
+        """The smtp server port upon instantiation."""
         return self._port
 
     @property
     def connected(self):
-        """The status of connection to the smtp server"""
+        """The status of connection to the smtp server."""
         return self._connected
 
     def connect(self):
-        """Initializes a connection to the smtp server
+        """Initializes a connection to the smtp server.
 
         :return: True on success, False otherwise
         """
@@ -134,7 +134,7 @@ class SmtpServer(object):
             self._smtp.login(self.username, self.password)
         self._connected = True
 
-    def send(self,
+    def send(self,  # pylint: disable=too-many-arguments, invalid-name
              sender,
              recipients,
              cc=None,
@@ -143,7 +143,7 @@ class SmtpServer(object):
              body='',
              attachments=None,
              content='text'):
-        """Sends the email
+        """Sends the email.
 
         :param sender: The server of the message
         :param recipients: The recipients (To:) of the message
@@ -182,23 +182,24 @@ class SmtpServer(object):
         return result
 
     def disconnect(self):
-        """Disconnects from the remote smtp server
+        """Disconnects from the remote smtp server.
 
         :return: True on success, False otherwise
         """
-        if self.connected:
-            try:
-                self._smtp.close()
-                self._connected = False
-                result = True
-            except Exception:  # noqa
-                self._logger.exception('Something went wrong!')
-                result = False
-            return result
+        if not self.connected:
+            return True
+        try:
+            self._smtp.close()
+            self._connected = False
+            result = True
+        except Exception:  # noqa
+            self._logger.exception('Something went wrong!')
+            result = False
+        return result
 
 
-class EasySender(object):
-    """A simple wrapper around the SmtpServer object"""
+class EasySender:  # pylint: disable=too-few-public-methods, too-many-arguments, invalid-name
+    """A simple wrapper around the SmtpServer object."""
 
     def __init__(self,
                  smtp_address,
@@ -223,7 +224,7 @@ class EasySender(object):
              body='',
              attachments=None,
              content='text'):
-        """Sends the email by connecting and disconnecting after the send
+        """Sends the email by connecting and disconnecting after the send.
 
         :param sender: The sender of the message
         :param recipients: The recipients (To:) of the message
@@ -249,10 +250,10 @@ class EasySender(object):
         return True
 
 
-class Message(object):
-    """A model of an email message"""
+class Message:  # pylint: disable=too-many-instance-attributes
+    """A model of an email message."""
 
-    def __init__(self,
+    def __init__(self,  # pylint: disable=too-many-arguments
                  sender,
                  recipients,
                  cc=None,
@@ -273,8 +274,8 @@ class Message(object):
         self._content = None
         self._message = None
         self.sender = sender
-        self.to = recipients
-        self.cc = cc
+        self.to = recipients  # pylint: disable=invalid-name
+        self.cc = cc  # pylint: disable=invalid-name
         self.bcc = bcc
         self.subject = subject
         self.body = body
@@ -283,7 +284,7 @@ class Message(object):
         self._setup_message()
 
     def _setup_message(self):
-        """Constructs the actual underlying message with provided values"""
+        """Constructs the actual underlying message with provided values.."""
         if self.content == 'html':
             self._message = MIMEMultipart('alternative')
             part = MIMEText(self.body, 'html', 'UTF-8')
@@ -303,15 +304,15 @@ class Message(object):
 
     @staticmethod
     def _validate_simple(email):
-        """Does a simple validation of an email by matching it to a regexps
+        """Does a simple validation of an email by matching it to a regex.
 
         :param email: The email to check
         :return: The valid Email address
 
         :raises: ValueError if value is not a valid email
         """
-        name, address = parseaddr(email)
-        if not re.match('[^@]+@[^@]+\.[^@]+', address):
+        _, address = parseaddr(email)
+        if not re.match(r'[^@]+@[^@]+\.[^@]+', address):
             raise ValueError('Invalid email :{email}'.format(email=email))
         return address
 
@@ -323,7 +324,7 @@ class Message(object):
 
     @property
     def sender(self):
-        """The email address of the sender"""
+        """The email address of the sender."""
         return self._sender
 
     @sender.setter
@@ -334,7 +335,7 @@ class Message(object):
 
     @property
     def recipients(self):
-        """A list of all recipients of the message"""
+        """A list of all recipients of the message."""
         return self.to + self.cc + self.bcc
 
     def _get_recipients(self, value):
@@ -342,28 +343,28 @@ class Message(object):
         return [self._validate_simple(recipient) for recipient in recipients]
 
     @property
-    def to(self):
-        """The main (to) recipients of the message"""
+    def to(self):  # pylint: disable=invalid-name
+        """The main (to) recipients of the message."""
         return self._to
 
     @to.setter
-    def to(self, value):
+    def to(self, value):  # pylint: disable=invalid-name
         if not value:
             raise ValueError('Recipients cannot be empty.')
         self._to = self._get_recipients(value)
 
     @property
-    def cc(self):
-        """The cc recipients of the message"""
+    def cc(self):  # pylint: disable=invalid-name
+        """The cc recipients of the message."""
         return self._cc
 
     @cc.setter
-    def cc(self, value):
+    def cc(self, value):  # pylint: disable=invalid-name
         self._cc = self._get_recipients(value)
 
     @property
     def bcc(self):
-        """The bcc recipients of the message"""
+        """The bcc recipients of the message."""
         return self._bcc
 
     @bcc.setter
@@ -372,7 +373,7 @@ class Message(object):
 
     @property
     def subject(self):
-        """The subject of the message"""
+        """The subject of the message."""
         return self._subject
 
     @subject.setter
@@ -381,7 +382,7 @@ class Message(object):
 
     @property
     def body(self):
-        """The body of the message"""
+        """The body of the message."""
         return self._body
 
     @body.setter
@@ -390,7 +391,7 @@ class Message(object):
 
     @property
     def content(self):
-        """The type of content of the message"""
+        """The type of content of the message."""
         return self._content
 
     @content.setter
@@ -402,7 +403,7 @@ class Message(object):
 
     @property
     def attachments(self):
-        """A list of attachment names of the message"""
+        """A list of attachment names of the message."""
         return self._attachments
 
     @attachments.setter
@@ -422,9 +423,9 @@ class Message(object):
 
     @property
     def as_string(self):
-        """The string representation of the message"""
+        """The string representation of the message."""
         return self._message.as_string()
 
     def __str__(self):
-        """The string representation of the message"""
+        """The string representation of the message."""
         return self.as_string
